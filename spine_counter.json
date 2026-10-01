@@ -1,0 +1,65 @@
+{
+  "qoragent": {
+    "kept": [
+      "abc-lut6"
+    ],
+    "seconds": 6.15,
+    "report": "QoR search on top=counter\n\nbaseline      10 cells  0.60s\nbest           8 cells  0.58s   (20.0% fewer)\n\n  candidate              verdict                    cells\n  abc-lut6               KEPT                       8\n  abc-lut4               REJECTED_NOT_SMALLER       8\n  abc-area               REJECTED_NOT_SMALLER       10\n  wreduce                REJECTED_NOT_SMALLER       10\n  opt-full               REJECTED_NOT_SMALLER       10\n  share                  REJECTED_NOT_SMALLER       10\n  retime                 REJECTED_NOT_SMALLER       8\n  dfflegalize            REJECTED_NOT_SMALLER       10\n\nkept: abc-lut6"
+  },
+  "formal": {
+    "rtl": {
+      "status": "PROVED",
+      "seconds": 1.15
+    },
+    "netlist": {
+      "status": "PROVED",
+      "seconds": 1.29
+    },
+    "stuck_bit0": {
+      "status": "REFUTED",
+      "seconds": 1.27,
+      "edit": "assign _0_[0] = 2'h1 -> assign _0_[0] = 2'h2"
+    },
+    "swap_en_gating": {
+      "status": "REFUTED",
+      "seconds": 1.31,
+      "edit": "else if (en) -> else if (!en)"
+    }
+  },
+  "negative_control": {
+    "property": "a property that is false of this design",
+    "clean": "REFUTED",
+    "stuck_bit0": "REFUTED"
+  },
+  "coverage": {
+    "rtl": {
+      "profile": "cnt{0:8, 1:4, 2:2, 3:1}",
+      "dead": {},
+      "rc": 0
+    },
+    "netlist": {
+      "profile": "cnt{0:8, 1:4, 2:2, 3:1}",
+      "dead": {},
+      "rc": 0
+    },
+    "stuck_bit0": {
+      "profile": "cnt{0:0, 1:0, 2:0, 3:0}",
+      "dead": {
+        "cnt": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      "rc": 0
+    },
+    "swap_en_gating": {
+      "profile": "cnt{0:17, 1:8, 2:4, 3:2}",
+      "dead": {},
+      "rc": 0
+    }
+  },
+  "verdict": "SPINE_OK",
+  "workdir": "C:\\Users\\china\\AppData\\Local\\eda-spine\\work"
+}

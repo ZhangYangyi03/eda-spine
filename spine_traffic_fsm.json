@@ -1,0 +1,61 @@
+{
+  "qoragent": {
+    "kept": [
+      "abc-lut6"
+    ],
+    "seconds": 6.48,
+    "report": "QoR search on top=traffic_fsm\n\nbaseline      15 cells  0.58s\nbest           4 cells  0.60s   (73.3% fewer)\n\n  candidate              verdict                    cells\n  abc-lut6               KEPT                       4\n  abc-lut4               REJECTED_NOT_SMALLER       4\n  abc-area               REJECTED_NOT_SMALLER       4\n  wreduce                REJECTED_NOT_SMALLER       15\n  opt-full               REJECTED_NOT_SMALLER       15\n  share                  REJECTED_NOT_SMALLER       15\n  retime                 REJECTED_NOT_SMALLER       4\n  dfflegalize            REJECTED_NOT_SMALLER       15\n\nkept: abc-lut6"
+  },
+  "formal": {
+    "rtl": {
+      "status": "PROVED",
+      "seconds": 1.59
+    },
+    "netlist": {
+      "status": "PROVED",
+      "seconds": 1.62
+    },
+    "state_seq": {
+      "status": "REFUTED",
+      "seconds": 1.42,
+      "edit": "assign _0_[1] = 4'h6 >> { state[0], state[1] }; -> assign _0_[1] = 4'h0 >> { state[0], state[1] };"
+    },
+    "tick_gate": {
+      "status": "REFUTED",
+      "seconds": 1.5,
+      "edit": "else if (tick) state[0] -> else if (!tick) state[0]"
+    }
+  },
+  "negative_control": {
+    "property": "a property that is false of this design",
+    "clean": "REFUTED"
+  },
+  "coverage": {
+    "rtl": {
+      "profile": "state{0:16, 1:8}",
+      "dead": {},
+      "rc": 0
+    },
+    "netlist": {
+      "profile": "state{0:16, 1:8}",
+      "dead": {},
+      "rc": 0
+    },
+    "state_seq": {
+      "profile": "state{0:16, 1:0}",
+      "dead": {
+        "state": [
+          1
+        ]
+      },
+      "rc": 0
+    },
+    "tick_gate": {
+      "profile": "state{0:6, 1:16}",
+      "dead": {},
+      "rc": 0
+    }
+  },
+  "verdict": "SPINE_OK",
+  "workdir": "C:\\Users\\china\\AppData\\Local\\eda-spine\\work"
+}
