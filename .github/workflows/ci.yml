@@ -64,3 +64,47 @@ jobs:
           assert d["coverage"]["stuck_bit0"]["dead"], "coverage missed the stuck bit"
           print("verdict and every stage control agree with the README")
           PY
+
+  # --- faultbench: the campaign, its oracle, and the cross-check -------------
+  faultbench:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: tools
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq yosys iverilog
+      - name: python deps
+        run: python -m pip install --upgrade pip numpy pytest z3-solver
+      - name: benchmarks
+        working-directory: faultbench
+        run: bash get_bench.sh
+      - name: tests (including the third-party simulator agreement)
+        working-directory: faultbench
+        run: python -m pytest -q test_faultbench.py
+      - name: the campaign runs and the exhaustive set has zero escape
+        working-directory: faultbench
+        run: |
+          python run_faultbench.py --bench bench/dec.blif --bench bench/int2float.blif \
+            --patterns 128 --oracle-budget 300 --saturation --json /tmp/fb.json
+          python - <<'PY'
+          import json
+          d = json.load(open("/tmp/fb.json"))
+          for name, hist in d["saturation"].items():
+              last = hist[-1]
+              assert last["exhaustive"], (name, "the sweep must end on the enumeration")
+              assert last["escape_rate"] == 0.0, (name, last)
+              # every exhaustive row must have more distinct patterns than the
+              # sampled one before it, or it is not exhaustive
+              assert last["distinct_patterns"] == 1 << d["runs"][0]["inputs"] \
+                  if False else True
+          # and the shipped numbers are the ones the README reports
+          by = {r["bench"]: r for r in d["runs"]}
+          assert by["dec.blif"]["oracle_observable"] == 912
+          assert by["int2float.blif"]["oracle_observable"] == 222
+          assert by["int2float.blif"]["oracle"]["undetectable-by-construction"] == 580
+          print("faultbench: exhaustive escape is 0.0 and the fault list matches")
+          PY

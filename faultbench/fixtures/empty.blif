@@ -1,0 +1,5 @@
+.model t
+.inputs a b
+.outputs f
+.names a b f
+.end

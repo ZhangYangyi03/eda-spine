@@ -1,0 +1,8 @@
+bench/
+.oracle_cache.json
+__pycache__/
+.pytest_cache/
+results.json
+sat.json
+*.v
+simv
