@@ -32,15 +32,14 @@ jobs:
           sudo apt-get install -y -qq yosys z3 verilator
           git clone --depth 1 https://github.com/YosysHQ/sby /tmp/sby
           sudo make -C /tmp/sby install
-          pip install click
+          python -m pip install --upgrade pip click pytest
       - name: toolchain is really there
         run: |
           yosys -V
           sby --version
           verilator --version
       - name: unit tests
-        run: pytest -q eda-spine/tests
-        working-directory: ${{ github.workspace }}
+        run: python -m pytest -q eda-spine/tests
       - name: the chain runs end to end and its verdict is SPINE_OK
         run: |
           cd eda-spine
