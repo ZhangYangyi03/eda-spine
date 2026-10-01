@@ -97,12 +97,28 @@ One more measurement worth keeping: Verilator's generated `main` never calls
 and throws the data away (`cov.dat` is not created). The `sim_main.cpp` used
 here is covagent's own replacement main, copied from its bench.
 
+## The physical stage
+
+That limit is closed. `phys/` runs the chain to a placed and routed layout on the
+open nangate45 library and asks the same property of the result. The short
+version, and the third line is the finding:
+
+    postroute    A_plain   rc=0  successful proof by k-induction
+    NEG_dff_d    A_plain   rc=2  counterexample trace [basecase]
+    NEG_mux_a    A_plain   rc=0  successful proof by k-induction
+
+Synthesis and P&R do not break the property (18 logic cells, 13 fillers, three
+`BUF_X4` from clock-tree synthesis, routed in a 25.57x25.57 um die). Breaking a
+flop's data input does get caught. Breaking a hold-path mux input does not -- and
+cannot, because the property is guarded by `pen` and never observes a hold. A
+real change can be invisible to the property that was written; `phys/README.md`
+has the details and the five toolchain traps paid to get there.
+
 ## Honest limits
 
-- **The physical flow is not in here.** No placement, no routing, no OpenROAD --
-  it is not installed in this WSL image (`command -v openroad` -> nothing).
-  Everything above is RTL -> gate netlist. The name is a promise about the
-  direction, not about what runs today.
+- **OpenROAD is not on PATH.** It is at `/opt/openroad/bin/openroad` and needs
+  `LD_LIBRARY_PATH=/opt/python310/usr/lib/x86_64-linux-gnu`; scanning PATH and
+  concluding it was absent was wrong. `phys/` uses it.
 - **The netlist-instead-of-RTL runtime is the real cost.** `sync_fifo` proves in
   ~1 s against the RTL and TIMEOUTs against the flat 137-cell netlist. The seam
   check is affordable on small designs and is not free on larger ones; that is

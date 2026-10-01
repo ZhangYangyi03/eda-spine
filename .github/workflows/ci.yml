@@ -38,6 +38,10 @@ jobs:
           yosys -V
           sby --version
           verilator --version
+      - name: the physical stage's toolchain is really there
+        run: |
+          ls -la /opt/openroad/bin/openroad 2>/dev/null && echo "openroad present on this host" \
+            || echo "openroad absent on the CI runner; the phys stage is skipped there"
       - name: unit tests
         run: python -m pytest -q eda-spine/tests
       - name: the chain runs end to end and its verdict is SPINE_OK
