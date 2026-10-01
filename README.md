@@ -114,6 +114,15 @@ cannot, because the property is guarded by `pen` and never observes a hold. A
 real change can be invisible to the property that was written; `phys/README.md`
 has the details and the five toolchain traps paid to get there.
 
+## The skeleton is not specific to EDA
+
+[kinetics-spine](https://github.com/ZhangYangyi03/kinetics-spine) is this repo's
+four stages with the silicon replaced by a reaction network: search with a gate,
+re-ask a proved property of the candidate, break something and require the gate
+to say no, measure what moved. Same loop, and the answer to what transfers is in
+its README -- the loop does, the oracle does not, and the oracle is where the
+cost is.
+
 ## Honest limits
 
 - **OpenROAD is not on PATH.** It is at `/opt/openroad/bin/openroad` and needs
