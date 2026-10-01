@@ -22,25 +22,28 @@ database is thrown away -- sim_main.cpp here is covagent's own replacement main,
 copied from its bench, and it is why the numbers are real.
 """
 
-import base64
 import os
 import shutil
-import subprocess
 import sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.join(os.path.dirname(HERE), "covagent"))
 from covagent import boundary                      # noqa: E402
-from covagent.sim import win_to_wsl                # noqa: E402
+from covagent.sim import win_to_wsl, wsl_bash      # noqa: E402
 
 COVAGENT = os.path.join(os.path.dirname(HERE), "covagent")
 
 
 def _bash(script, timeout):
-    b64 = base64.b64encode(script.encode("utf-8")).decode("ascii")
-    cmd = 'wsl -d Ubuntu -- bash -lc "echo %s | base64 -d > /tmp/edaspine.sh && bash /tmp/edaspine.sh"' % b64
-    r = subprocess.run(cmd, shell=True, capture_output=True, timeout=timeout)
-    return (r.stdout or b"").decode("utf-8", "replace"), r.returncode
+    """covagent's own bridge, not a fourth copy of it.
+
+    The same function exists in assertforge.formal (as `wsl_bash`), in
+    covagent.sim (imported here) and in qoragent.synth -- three copies, same
+    base64-over-wsl trick, differing only in the per-tool env var and a default
+    timeout. Calling the one that is already imported is the whole point of a
+    spine: the duplication is what made the four tools four tools.
+    """
+    return wsl_bash(script, timeout=timeout)
 
 
 def build_and_run(files, tb_top, workdir, timeout=600):

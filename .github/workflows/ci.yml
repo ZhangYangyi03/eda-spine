@@ -1,0 +1,63 @@
+name: ci
+
+on: [push, pull_request]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # the spine imports its three sibling repos; they are checked out
+          # beside it, exactly as they sit on the machine this was written on
+          path: eda-spine
+      - uses: actions/checkout@v4
+        with:
+          repository: ZhangYangyi03/assertforge
+          path: assertforge
+      - uses: actions/checkout@v4
+        with:
+          repository: ZhangYangyi03/covagent
+          path: covagent
+      - uses: actions/checkout@v4
+        with:
+          repository: ZhangYangyi03/qoragent
+          path: qoragent
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: install the toolchain the chain actually drives
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq yosys z3 verilator
+          git clone --depth 1 https://github.com/YosysHQ/sby /tmp/sby
+          sudo make -C /tmp/sby install
+          pip install click
+      - name: toolchain is really there
+        run: |
+          yosys -V
+          sby --version
+          verilator --version
+      - name: unit tests
+        run: pytest -q eda-spine/tests
+        working-directory: ${{ github.workspace }}
+      - name: the chain runs end to end and its verdict is SPINE_OK
+        run: |
+          cd eda-spine
+          python spine.py --rtl ../assertforge/bench/designs/counter.v --top counter \
+            --props props_counter.sv --design counter --json /tmp/spine.json
+      - name: the recorded result says what the README says it says
+        run: |
+          python - <<'PY'
+          import json
+          d = json.load(open("/tmp/spine.json"))
+          assert d["verdict"] == "SPINE_OK", d["verdict"]
+          assert d["formal"]["rtl"]["status"] == "PROVED"
+          assert d["formal"]["netlist"]["status"] == "PROVED"
+          for m in ("stuck_bit0", "swap_en_gating"):
+              assert d["formal"][m]["status"] == "REFUTED", (m, d["formal"][m])
+          assert d["negative_control"]["clean"] == "REFUTED"
+          assert d["coverage"]["netlist"]["dead"] == {}
+          assert d["coverage"]["stuck_bit0"]["dead"], "coverage missed the stuck bit"
+          print("verdict and every stage control agree with the README")
+          PY
