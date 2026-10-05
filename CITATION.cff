@@ -1,0 +1,12 @@
+cff-version: 1.2.0
+message: "If you use this work, please cite it as below."
+title: "eda-spine: the chain between the EDA tools"
+abstract: "Joins qoragent, assertforge and covagent so the post-synthesis gate netlist must still satisfy the property proved of the RTL, with the property refuted once a single line is perturbed."
+authors:
+  - family-names: Zhang
+    given-names: Yangyi
+    affiliation: Georgetown University
+repository-code: "https://github.com/ZhangYangyi03/eda-spine"
+license: Apache-2.0
+type: software
+keywords: [eda, yosys, symbiyosys, verilator, formal verification]
